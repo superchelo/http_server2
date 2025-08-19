@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
+
 
 #define PORT 8080
 #define BACKLOG 5
@@ -40,17 +42,18 @@ int main() {
 
     printf("TCP server listening on port %d...\n", PORT);
 
-    // 4. Accept a client connection
-    if ((client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len)) == -1) {
-        perror("accept failed");
-        close(server_fd);
-        exit(EXIT_FAILURE);
-    }
 
     printf("Client connected!\n");
 
-    // 5. Communicate with client
     while (1) {
+
+            // 4. Accept a client connection
+        if ((client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len)) == -1) {
+            perror("accept failed");
+            close(server_fd);
+            exit(EXIT_FAILURE);
+        }
+            // 5. Communicate with client
         int bytes_read = read(client_fd, buffer, BUF_SIZE - 1);
         if (bytes_read <= 0) {
             printf("Client disconnected.\n");
@@ -65,10 +68,12 @@ int main() {
             perror("send failed");
             break;
         }
+        close(client_fd);
+
     }
 
     // 6. Clean up
-    close(client_fd);
+//    close(client_fd);
     close(server_fd);
     return 0;
 }
