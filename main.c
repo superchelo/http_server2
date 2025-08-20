@@ -5,16 +5,37 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-
 #define PORT 8080
 #define BACKLOG 5
 #define BUF_SIZE 4096
+#define NUM_OF_THREADS 10
+
+void *thread_func(void * c_fd){
+        char buffer[BUF_SIZE];
+        int client_fd = (int) c_fd;
+        // 5. Communicate with client
+        int bytes_read = read(client_fd, buffer, BUF_SIZE - 1);
+        if (bytes_read <= 0) {
+            printf("Client disconnected.\n");
+        }
+
+        buffer[bytes_read] = '\0';
+        printf("Received: %s\n", buffer);
+
+        // Echo back
+        if (send(client_fd, buffer, bytes_read, 0) == -1) {
+            perror("send failed");
+        }
+        close(client_fd);
+    pthread_exit(0);
+}
 
 int main() {
+    pthread_t threads[NUM_OF_THREADS];
+    int thread_iret[NUM_OF_THREADS];
     int server_fd, client_fd;
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
-    char buffer[BUF_SIZE];
 
     // 1. Create socket (IPv4, TCP)
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -53,22 +74,8 @@ int main() {
             close(server_fd);
             exit(EXIT_FAILURE);
         }
-            // 5. Communicate with client
-        int bytes_read = read(client_fd, buffer, BUF_SIZE - 1);
-        if (bytes_read <= 0) {
-            printf("Client disconnected.\n");
-            break;
-        }
-
-        buffer[bytes_read] = '\0';
-        printf("Received: %s\n", buffer);
-
-        // Echo back
-        if (send(client_fd, buffer, bytes_read, 0) == -1) {
-            perror("send failed");
-            break;
-        }
-        close(client_fd);
+        thread_iret[0] = pthread_create(&threads[0], NULL, thread_func, (void*) client_fd);
+        pthread_join(thread_iret[0], NULL);
 
     }
 
