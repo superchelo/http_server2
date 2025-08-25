@@ -3,8 +3,8 @@ CC = gcc
 CFLAGS = -w
 LDFLAGS = -lpthread
 
-# Project name
-TARGET = myserver
+#target
+TARGET = a.out
 
 # Source and object files
 SRCS = main.c connection.c
