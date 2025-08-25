@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include "connection.h"
 
 #define PORT 8080
 #define BACKLOG 5
@@ -34,6 +35,8 @@ void *thread_func(void * c_fd){
 }
 
 int main() {
+    test();
+    test();
     int server_fd, client_fd;
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
