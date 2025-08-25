@@ -10,6 +10,9 @@
 #define BUF_SIZE 4096
 #define NUM_OF_THREADS 10
 
+pthread_t threads[NUM_OF_THREADS];
+int thread_iret[NUM_OF_THREADS];
+
 void *thread_func(void * c_fd){
         char buffer[BUF_SIZE];
         int client_fd = (int) c_fd;
@@ -31,8 +34,6 @@ void *thread_func(void * c_fd){
 }
 
 int main() {
-    pthread_t threads[NUM_OF_THREADS];
-    int thread_iret[NUM_OF_THREADS];
     int server_fd, client_fd;
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
@@ -74,8 +75,9 @@ int main() {
             close(server_fd);
             exit(EXIT_FAILURE);
         }
+        
         thread_iret[0] = pthread_create(&threads[0], NULL, thread_func, (void*) client_fd);
-        pthread_join(thread_iret[0], NULL);
+        pthread_join(threads[0], NULL);
 
     }
 
