@@ -1,5 +1,5 @@
-#ifndef MYHEADER_H
-#define MYHEADER_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 void *thread_func(void * c_fd);
 
