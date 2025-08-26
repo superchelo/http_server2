@@ -1,6 +1,6 @@
 #ifndef MYHEADER_H
 #define MYHEADER_H
 
-int test();
+void *thread_func(void * c_fd);
 
 #endif
